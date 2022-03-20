@@ -6,7 +6,7 @@
 # the LICENSE file found in the root directory of this source tree.
 #
 
-cmake_minimum_required(VERSION 3.14.6)
+cmake_minimum_required(VERSION 3.22.1)
 
 include("cmake/options.cmake")
 include("cmake/sanitizers.cmake")
@@ -14,24 +14,16 @@ include("cmake/utils.cmake")
 
 project("ebpf-common")
 
-function(ebpfCommonMain)
-  generateSettingsTargets()
+generateSettingsTargets()
 
-  add_subdirectory("libraries")
-  add_subdirectory("ebpf")
-  add_subdirectory("error")
-  add_subdirectory("utils")
+add_subdirectory("libraries")
+add_subdirectory("ebpf")
+add_subdirectory("error")
+add_subdirectory("utils")
 
-  if(EBPF_COMMON_ENABLE_TESTS)
-    message(STATUS "ebpf-common - Tests are enabled")
-    generateEbpfCommonTests()
+if(EBPF_COMMON_ENABLE_TESTS)
+  message(STATUS "ebpf-common - Tests are enabled")
 
-  else()
-    message(STATUS "ebpf-common - Tests are disabled")
-  endif()
-endfunction()
-
-function(generateEbpfCommonTests)
   add_executable(ebpf-common-tests
     tests/main.cpp
 
@@ -47,7 +39,7 @@ function(generateEbpfCommonTests)
   target_link_libraries(ebpf-common-tests PRIVATE
     cxx_target_settings
 
-    thirdparty_catch2
+    thirdparty_doctest
 
     ebpf
     error
@@ -58,6 +50,7 @@ function(generateEbpfCommonTests)
     COMMAND "$<TARGET_FILE:ebpf-common-tests>"
     COMMENT "Running ebpf-common tests"
   )
-endfunction()
 
-ebpfCommonMain()
+else()
+  message(STATUS "ebpf-common - Tests are disabled")
+endif()
