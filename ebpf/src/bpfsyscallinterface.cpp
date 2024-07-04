@@ -28,6 +28,9 @@ assembleSystemCall(llvm::IRBuilder<> &builder,
 
   for (const auto &argument : argument_list) {
     argument_type_list.push_back(argument->getType());
+    if (argument->getType()->isOpaquePointerTy()) {
+      return nullptr;
+    }
   }
 
   auto function_type =
